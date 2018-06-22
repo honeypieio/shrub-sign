@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import RPi.GPIO as gpio
+import time
 
 # Using Broadcom chip's pin layout
 gpio.setmode(gpio.BCM)
@@ -15,27 +16,12 @@ gpio.setup(clockPin, gpio.OUT)
 gpio.setup(latchPin, gpio.OUT)
 gpio.setup(dataPin, gpio.OUT)
 
+gpio.output(clockPin, gpio.LOW)
+gpio.output(latchPin, gpio.LOW)
+gpio.output(dataPin, gpio.LOW)
 
-# Number param must be string!
-def displayNumber(number):
 
-    number = str(number)
-    numberAsArr = list(number);
-    formattedNumber = []
-    count = 0
-    for i in range(len(numberAsArr)):
-	if numberAsArr[i] != "" and i < (len(numberAsArr) - 1):
 
-	    gpio.output(latchPin, 0)
-
-	    count = count + 1
-            if numberAsArr[i+1] == ".":
-	        numberAsArr[i+1] = ""
-        	postNumber(int(numberAsArr[i]), True)
-	    else:
-		postNumber(int(numberAsArr[i]), False)
-
-            gpio.output(latchPin, 1)
 
 # Find byte according to int, shift to registers
 
@@ -74,10 +60,18 @@ def postNumber(number, decimal):
         segments = a | b | c | d | e | f
 
 
+
     if decimal == True:
         segments |= dp;
 
     for i in range(8):
-        gpio.output(dataPin, (segments >> i) & 1)
-	gpio.output(clockPin, 1)
-        gpio.output(clockPin, 0)
+        gpio.output(clockPin, gpio.LOW)
+        gpio.output(dataPin, gpio.HIGH)
+        gpio.output(clockPin, gpio.HIGH)
+	print(1)
+
+for i in range(4):
+    gpio.output(latchPin, gpio.LOW)
+    postNumber(0, True)
+    time.sleep(0.06)
+    gpio.output(latchPin, gpio.HIGH)
