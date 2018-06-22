@@ -21,34 +21,35 @@ def displayNumber(number):
 
     number = str(number)
     numberAsArr = list(number);
-    formattedNumber = []
-    count = 0
+
     for i in range(len(numberAsArr)):
-	if numberAsArr[i] != "" and i < (len(numberAsArr) - 1):
 
-	    gpio.output(latchPin, 0)
+        if numberAsArr[i] != "":
 
-	    count = count + 1
-            if numberAsArr[i+1] == ".":
-	        numberAsArr[i+1] = ""
-        	postNumber(int(numberAsArr[i]), True)
-	    else:
-		postNumber(int(numberAsArr[i]), False)
+            gpio.output(latchPin, 0)
 
+            try:
+                if numberAsArr[i+1] == ".":
+                    numberAsArr[i+1] = ""
+                    postNumber(int(numberAsArr[i]), True)
+                else:
+                    postNumber(int(numberAsArr[i]), False)
+
+            except:
+                postNumber(int(numberAsArr[i]), False)
             gpio.output(latchPin, 1)
 
-# Find byte according to int, shift to registers
-
+# Find byte according to number, shift to registers
 def postNumber(number, decimal):
 
-    a = 1<<0
-    b = 1<<6
-    c = 1<<5
-    d = 1<<4
-    e = 1<<3
-    f = 1<<1
-    g = 1<<2
-    dp = 1<<7
+    a = 0b10000000
+    b = 0b01000000
+    c = 0b00100000
+    d = 0b00010000
+    e = 0b00001000
+    f = 0b00000100
+    g = 0b00000010
+    dp = 0b00000001
 
     number = int(number)
 
@@ -75,9 +76,12 @@ def postNumber(number, decimal):
 
 
     if decimal == True:
-        segments |= dp;
+        segments |= dp
+
+    print(format(segments, "08b"))
 
     for i in range(8):
         gpio.output(dataPin, (segments >> i) & 1)
-	gpio.output(clockPin, 1)
+        gpio.output(clockPin, 1)
         gpio.output(clockPin, 0)
+        random = 1
