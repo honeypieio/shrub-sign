@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import RPi.GPIO as gpio
+import time
 
 # Using Broadcom chip's pin layout
 gpio.setmode(gpio.BCM)
@@ -20,36 +21,51 @@ gpio.setup(dataPin, gpio.OUT)
 def displayNumber(number):
 
     number = str(number)
-    numberAsArr = list(number);
+    numberAsArr = list(number)
+
+    numCount = 0
+    actualLength = 1
+    for i in range(len(numberAsArr) - 1):
+
+	if numberAsArr[i] != "." and numCount < 4:
+	    numCount+=1
+        if numCount < 4:
+	    actualLength+=1
+
+    numberAsArr = numberAsArr[:actualLength]
+    numberAsArr = list(reversed(numberAsArr))
 
     for i in range(len(numberAsArr)):
 
-        if numberAsArr[i] != "":
-
+        if numberAsArr[i] != ".":
+	    time.sleep(0.325);
             gpio.output(latchPin, 0)
 
             try:
-                if numberAsArr[i+1] == ".":
-                    numberAsArr[i+1] = ""
+                if numberAsArr[i-1] == ".":
                     postNumber(int(numberAsArr[i]), True)
                 else:
                     postNumber(int(numberAsArr[i]), False)
 
             except:
                 postNumber(int(numberAsArr[i]), False)
+
             gpio.output(latchPin, 1)
+
+    print("Display updated! (" + str(number) + ")")
 
 # Find byte according to number, shift to registers
 def postNumber(number, decimal):
 
     a = 0b10000000
-    b = 0b01000000
-    c = 0b00100000
-    d = 0b00010000
-    e = 0b00001000
-    f = 0b00000100
-    g = 0b00000010
+    b = 0b00000010
+    c = 0b00000100
+    d = 0b00001000
+    e = 0b00010000
+    f = 0b01000000
+    g = 0b00100000
     dp = 0b00000001
+
 
     number = int(number)
 
@@ -78,10 +94,9 @@ def postNumber(number, decimal):
     if decimal == True:
         segments |= dp
 
-    print(format(segments, "08b"))
+    #print(format(segments, "08b"))
 
     for i in range(8):
         gpio.output(dataPin, (segments >> i) & 1)
         gpio.output(clockPin, 1)
         gpio.output(clockPin, 0)
-        random = 1
