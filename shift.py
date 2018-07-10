@@ -3,6 +3,9 @@
 import RPi.GPIO as gpio
 import time
 
+# Turn off warnings from RPi library
+gpio.setwarnings(False)
+
 # Using Broadcom chip's pin layout
 gpio.setmode(gpio.BCM)
 
@@ -43,12 +46,12 @@ def displayNumber(number):
 
             try:
                 if numberAsArr[i-1] == ".":
-                    postNumber(int(numberAsArr[i]), True)
+                    postNumber(numberAsArr[i], True)
                 else:
-                    postNumber(int(numberAsArr[i]), False)
+                    postNumber(numberAsArr[i], False)
 
             except:
-                postNumber(int(numberAsArr[i]), False)
+                postNumber(numberAsArr[i], False)
 
             gpio.output(latchPin, 1)
 
@@ -66,35 +69,33 @@ def postNumber(number, decimal):
     g = 0b00100000
     dp = 0b00000001
 
-
-    number = int(number)
-
-    if number == 1:
+    if number == "1":
         segments = b | c
-    elif number == 2:
+    elif number == "2":
          segments = a | b | d | e | g
-    elif number == 3:
+    elif number == "3":
          segments = a | b | c | d | g
-    elif number == 4:
+    elif number == "4":
         segments = f | g | b | c
-    elif number == 5:
+    elif number == "5":
         segments = a | f | g | c | d
-    elif number == 6:
+    elif number == "6":
         segments = a | f | g | e | c | d
-    elif number == 7:
+    elif number == "7":
         segments = a | b | c
-    elif number == 8:
+    elif number == "8":
         segments = a | b | c | d | e | f | g
-    elif number == 9:
+    elif number == "9":
         segments = a | b | c | d | f | g
-    elif number == 0:
+    elif number == "0":
         segments = a | b | c | d | e | f
-
+    elif number == " ":
+	segments = 0b00000000
+    elif number == "-":
+	segments = g
 
     if decimal == True:
         segments |= dp
-
-    #print(format(segments, "08b"))
 
     for i in range(8):
         gpio.output(dataPin, (segments >> i) & 1)
