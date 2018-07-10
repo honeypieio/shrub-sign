@@ -1,0 +1,22 @@
+
+ 		 ###  #   # ####  #   # ####
+		#   # #   # #   # #   # #   #
+		#     #   # #   # #   # #   #
+ 		 ###  ##### ####  #   # ####
+		    # #   # ##    #   # #   #
+		#   # #   # # #   #   # #   #
+	 	 ###  #   # #  #   ###  ####
+
+			CO-OPERATIVE
+
+   Need help? Visit https://github.com/honeypieio/shrub-sign
+
+   ---------------------------------------------------------
+
+   Change Wi-Fi:
+   1. sudo nano wifi_config
+   2. Update SSID and password
+   3. wpa_cli -i wlan0 reconfigure
+   4. Done!
+
+   ---------------------------------------------------------
