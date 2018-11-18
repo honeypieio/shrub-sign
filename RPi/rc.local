@@ -17,7 +17,7 @@ if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
 fi
 
-sudo -H -u pi /home/pi/shrub-sign/code/init.py
+sudo -H -u pi /home/pi/shrub-sign/firmware/init.py
 
 exit 0
 
